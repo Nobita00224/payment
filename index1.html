@@ -1,0 +1,283 @@
+Tôi đã cập nhật lại đoạn mã HTML để khi bạn nhấn vào nút **"Thanh toán"** ở bất kỳ mục nào, trang web sẽ **tuyệt đối không hiện lên thông báo hay chuyển hướng gì hết** (giống hệt như khi bấm vào các nút bị khóa hoặc không phản hồi trên trang thật).
+
+Dưới đây là toàn bộ mã nguồn hoàn chỉnh đã được bổ sung tính năng này:
+
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh toán trực tuyến - UTH</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #008689;
+      padding: 28px 16px 40px 16px;
+      color: #212529;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .main-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 12px;
+      padding: 18px 26px 28px 26px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    }
+    .logo-wrap {
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .logo-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .uth-text {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: #008689;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+    .uni-sub {
+      text-align: left;
+      font-size: 8.5px;
+      font-weight: 800;
+      color: #d9232a;
+      line-height: 1.18;
+      letter-spacing: 0.4px;
+    }
+    .page-title {
+      text-align: center;
+      color: #008689;
+      font-size: 16px;
+      font-weight: 700;
+      margin: 6px 0 14px 0;
+      text-transform: uppercase;
+    }
+    .student-info {
+      font-size: 11px;
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+    .student-info b { font-weight: 700; }
+    .mssv-val { color: #3b6e8c; }
+    .panel {
+      border: 1px solid #dfdfdf;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .panel-header {
+      background-color: #f7f7f7;
+      padding: 7px 12px;
+      font-size: 11px;
+      color: #444;
+      border-bottom: 1px solid #dfdfdf;
+    }
+    .panel-body {
+      padding: 12px;
+      font-size: 10.5px;
+    }
+    .sub-heading {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #222;
+    }
+    .fee-list {
+      list-style: none;
+      margin-bottom: 12px;
+      line-height: 1.48;
+    }
+    .fee-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+      margin-bottom: 2px;
+    }
+    .chk-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 11px;
+      height: 11px;
+      background-color: #1a88c7;
+      color: #fff;
+      font-size: 8px;
+      border-radius: 2px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .summary-line {
+      margin-bottom: 5px;
+      font-size: 11px;
+    }
+    .summary-line b { font-weight: 700; }
+    .method-box {
+      border: 1px solid #d4d4d4;
+      border-radius: 3px;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+      cursor: pointer;
+      background: #fff;
+    }
+    .method-box.active {
+      background-color: #cde4f7;
+      border-color: #9ec5e8;
+    }
+    .method-logo {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 9px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .vnpay-icon {
+      background: linear-gradient(135deg, #005baa 50%, #ed1c24 50%);
+      color: #fff;
+    }
+    .momo-icon {
+      background: #a50064;
+      color: #fff;
+      line-height: 0.95;
+      text-align: center;
+      font-size: 8px;
+    }
+    .method-label {
+      font-size: 10.5px;
+      color: #6c757d;
+    }
+    .method-box.active .method-label {
+      color: #495057;
+    }
+    .btn-wrap {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .btn-pay {
+      background-color: #0d6efd;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 14px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-card">
+    <div class="logo-wrap">
+      <div class="logo-box">
+        <div class="uth-text">UTH</div>
+        <div class="uni-sub">
+          UNIVERSITY<br>OF TRANSPORT<br>HOCHIMINH CITY
+        </div>
+      </div>
+    </div>
+    <div class="page-title">THANH TOÁN TRỰC TUYẾN</div>
+
+    <div class="student-info">
+      <div><b>Mã số SV:</b> <span class="mssv-val">079208038245</span></div>
+      <div><b>Họ và tên:</b> Vũ Minh Hiếu</div>
+      <div><b>Ngày sinh:</b> 13/06/2008</div>
+      <div><b>Ngành:</b> Khoa học hàng hải</div>
+      <div><b>Chương trình đào tạo:</b> Chuẩn (đại trà)</div>
+    </div>
+
+    <!-- Khung 1 -->
+    <div class="panel">
+      <div class="panel-header">Các khoản đóng phí</div>
+      <div class="panel-body">
+        <div class="sub-heading">Nội dung thu</div>
+        <ul class="fee-list">
+          <li><span class="chk-icon">✓</span><span>Pháp luật đại cương: 1.030.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Triết học Mác - Lênin: 1.545.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Lý thuyết và kết cấu tàu biển: 1.545.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Phương pháp nghiên cứu: 1.545.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Quản trị học: 1.545.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Trí tuệ nhân tạo và ứng dụng: 1.545.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Đường lối quốc phòng và an ninh của đảng cộng sản VN: 1.545.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Công tác quốc phòng và an ninh: 1.030.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Quân sự chung: 515.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Kỹ thuật chiến đấu bộ binh và chiến thuật: 1.030.000đ</span></li>
+        </ul>
+
+        <div class="summary-line"><b>Tổng học phí:</b> 12.875.000,00đ</div>
+        <div class="summary-line"><b>Dư nợ:</b> 7.725.000,00đ</div>
+        <div class="summary-line"><b>Khấu trừ: 7.725.000,00đ</b></div>
+        <div class="summary-line"><b>Số tiền phải đóng:</b> 5.150.000,00đ</div>
+        <div class="summary-line"><b>Số tiền thanh toán:</b> 5.150.000đ</div>
+        <div class="summary-line" style="margin-bottom:8px;"><b>Phương thức thanh toán:</b></div>
+
+        <div class="method-box active">
+          <div class="method-logo vnpay-icon">VN</div>
+          <span class="method-label">VNPAY</span>
+        </div>
+        <div class="method-box">
+          <div class="method-logo momo-icon">mo<br>mo</div>
+          <span class="method-label">MoMo</span>
+        </div>
+        <div class="method-box">
+          <div class="method-logo momo-icon">Ví<br>momo</div>
+          <span class="method-label">Ví Trả Sau trên MoMo</span>
+        </div>
+
+        <div class="btn-wrap">
+          <button class="btn-pay" onclick="event.preventDefault();">Thanh toán</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Khung 2 -->
+    <div class="panel" style="margin-bottom:0;">
+      <div class="panel-header">Học phí TTNN và CNTT</div>
+      <div class="panel-body">
+        <div class="sub-heading">Nội dung thu</div>
+        <ul class="fee-list">
+          <li><span class="chk-icon">✓</span><span>Khảo sát năng lực ứng dụng CNTT cơ bản: 0đ</span></li>
+          <li><span class="chk-icon">✓</span><span>Khảo sát năng lực ngoại ngữ đầu vào (Tiếng Anh): 0đ</span></li>
+          <li><span class="chk-icon">✓</span><span>General English 2: 2.800.000đ</span></li>
+          <li><span class="chk-icon">✓</span><span>"Sinh hoạt công dân – sinh viên" Đầu khoá: 0đ</span></li>
+        </ul>
+
+        <div class="summary-line"><b>Tổng số tiền:</b> 2.800.000,00đ</div>
+        <div class="summary-line" style="margin-bottom:8px;"><b>Số tiền thanh toán:</b> 2.800.000đ</div>
+
+        <div class="method-box active">
+          <div class="method-logo vnpay-icon">VN</div>
+          <span class="method-label">VNPAY</span>
+        </div>
+        <div class="method-box">
+          <div class="method-logo momo-icon">mo<br>mo</div>
+          <span class="method-label">MoMo</span>
+        </div>
+        <div class="method-box">
+          <div class="method-logo momo-icon">Ví<br>momo</div>
+          <span class="method-label">Ví Trả Sau trên MoMo</span>
+        </div>
+
+        <div class="btn-wrap">
+          <button class="btn-pay" onclick="event.preventDefault();">Thanh toán</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+```
